@@ -34,15 +34,15 @@ map("n", "<leader>l", "<nop>", { desc = "Lazy" })
 map("n", "<leader>lz", "<cmd>:Lazy<cr>", { desc = "Lazy" })
 
 -- last used file
-map("n", "<tab><tab>", "<cmd>b#<cr>", { desc = "Switch to last used file" })
+map("n", "<tab>", "<cmd>b#<cr>", { desc = "Switch to last used file" })
 
 -- tabs
-map("n", "<tab>n", "<cmd>tabnew<cr>", { desc = "New tab" })
-map("n", "<tab>d", "<cmd>tabclose<cr>", { desc = "Close tab" })
-
-map("n", "<tab>0", "<cmd>set showtabline=0<cr>", { desc = "Set showtabline=0" })
-map("n", "<tab>1", "<cmd>set showtabline=1<cr>", { desc = "Set showtabline=1" })
-map("n", "<tab>2", "<cmd>set showtabline=2<cr>", { desc = "Set showtabline=2" })
+-- map("n", "<tab>n", "<cmd>tabnew<cr>", { desc = "New tab" })
+-- map("n", "<tab>d", "<cmd>tabclose<cr>", { desc = "Close tab" })
+--
+-- map("n", "<tab>0", "<cmd>set showtabline=0<cr>", { desc = "Set showtabline=0" })
+-- map("n", "<tab>1", "<cmd>set showtabline=1<cr>", { desc = "Set showtabline=1" })
+-- map("n", "<tab>2", "<cmd>set showtabline=2<cr>", { desc = "Set showtabline=2" })
 
 map("n", "L", "<cmd>tabnext<cr>", { desc = "Next tab" })
 map("n", "H", "<cmd>tabprev<cr>", { desc = "Prev tab" })
@@ -66,8 +66,18 @@ map("n", "<m-0>", "<cmd>tabn0<cr>", { desc = "Tab 10" })
 -- end, { desc = "Lazydocker (root dir)" })
 
 -- run current file in terminal
-map("n", "<leader>d", function()
-  Util.terminal({ "sh", "-c", "run " .. vim.fn.expand("%") }, {
+-- map("n", "<leader><CR>", function()
+--   Util.terminal({ "sh", "-c", "run " .. vim.fn.expand("%") }, {
+--     cwd = Util.root(),
+--     esc_esc = false,
+--     ctrl_hjkl = false,
+--     border = "single",
+--     size = { width = 0.8, height = 0.8 },
+--   })
+-- end, { desc = "Run current file" })
+
+map("n", "<CR>", function()
+  Snacks.terminal({ "sh", "-c", "gliffy-run" }, {
     cwd = Util.root(),
     esc_esc = false,
     ctrl_hjkl = false,

@@ -21,6 +21,7 @@ return {
       ["typst"] = { "typstfmt" },
       ["tex"] = { "latexindent" },
       ["sql"] = { "sql-formatter" },
+      ["python"] = { "ruff_format", "ruff_organize_imports" },
     },
   },
 }
