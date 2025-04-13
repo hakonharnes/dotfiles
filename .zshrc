@@ -126,7 +126,7 @@ export PATH="/opt/homebrew/opt/php@8.3/sbin:$PATH"
 export PATH="/opt/homebrew/opt/php@8.4/bin:$PATH"
 export PATH="/opt/homebrew/opt/php@8.3/bin:$PATH"
 
-function yz() {
+function z() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
 	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
