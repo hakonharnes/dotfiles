@@ -1,21 +1,14 @@
 return {
-  "HakonHarnes/img-clip.nvim",
-  event = "VeryLazy",
+  -- "HakonHarnes/img-clip.nvim",
   dir = "/Users/hakon/img-clip.nvim/",
+  event = "VeryLazy",
   config = {
-    template = {
-      [{ "pdf", "dog" }] = "[$CURSOR]($FILE_PATH)",
-      ["*"] = "![$CURSOR]($FILE_PATH)",
-    },
-
     default = {
-      drag_and_drop = {
-        insert_mode = true,
-      },
+      verbose = false,
     },
     filetypes = {
       markdown = {
-        dir_path = "dog",
+        copy_images = true,
       },
     },
   },
