@@ -1,6 +1,6 @@
 # Dotfiles
 
-A curated collection of my personal dotfiles and configurations.
+A curated collection of my personal dotfiles and configurations for MacOS.
 
 ## Overview
 
@@ -11,3 +11,13 @@ A curated collection of my personal dotfiles and configurations.
 - **tmux**: Terminal multiplexer
 - **yazi**: Terminal file manager
 - **starship.toml**: Shell prompt
+
+## Installation
+
+The easiest way to install these dotfiles is to use [Stow](https://www.gnu.org/software/stow/):
+
+```sh
+git clone https://github.com/hakonharnes/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+stow .
+```
