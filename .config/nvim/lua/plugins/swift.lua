@@ -13,6 +13,10 @@ return {
         },
       })
 
+      vim.diagnostic.config({
+        virtual_text = true,
+      })
+
       vim.api.nvim_create_autocmd("LspAttach", {
         desc = "LSP Actions",
         callback = function(args)
