@@ -312,6 +312,10 @@ if.app-id = 'com.raycast.macos'
 run = ['layout floating']
 
 [[on-window-detected]]
+if.app-id = 'com.podme.beta'
+run = ['layout floating']
+
+[[on-window-detected]]
 if.app-id = 'com.spotify.client'
 run = 'move-node-to-workspace S'
 
