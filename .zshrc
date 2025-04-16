@@ -118,7 +118,6 @@ export PATH="$PATH:/Users/hakon/.local/bin"
 export PATH="/opt/homebrew/opt/php@8.3/bin:$PATH"
 export PATH="/opt/homebrew/opt/php@8.3/sbin:$PATH"
 
-source $HOME/.ssh_alias
 export PATH="/opt/homebrew/opt/php@7.4/bin:$PATH"
 export PATH="/opt/homebrew/opt/php@7.4/sbin:$PATH"
 export PATH="/opt/homebrew/opt/php@8.3/bin:$PATH"
@@ -134,3 +133,5 @@ function z() {
 	fi
 	rm -f -- "$tmp"
 }
+
+source $HOME/.ssh_alias
