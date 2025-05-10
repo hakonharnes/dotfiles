@@ -14,9 +14,6 @@ local function map(mode, lhs, rhs, opts)
   end
 end
 
--- enter normal mode with jk
-map("i", "jk", "<esc>", { desc = "Enter normal mode" })
-
 -- copy/paste entire buffer
 map("n", "<leader>Y", "<cmd>:%y+<cr>", { desc = "Copy entire buffer to clipboard" })
 map("n", "<leader>P", ":silent! %delete _ | 0put +<CR>", { desc = "Replace entire buffer with clipboard content" })
