@@ -66,18 +66,8 @@ map("n", "<m-0>", "<cmd>tabn0<cr>", { desc = "Tab 10" })
 -- end, { desc = "Lazydocker (root dir)" })
 
 -- run current file in terminal
--- map("n", "<leader><CR>", function()
---   Util.terminal({ "sh", "-c", "run " .. vim.fn.expand("%") }, {
---     cwd = Util.root(),
---     esc_esc = false,
---     ctrl_hjkl = false,
---     border = "single",
---     size = { width = 0.8, height = 0.8 },
---   })
--- end, { desc = "Run current file" })
-
 map("n", "<CR>", function()
-  Snacks.terminal({ "sh", "-c", "gliffy-run" }, {
+  Snacks.terminal({ "sh", "-c", "run " .. vim.fn.expand("%") }, {
     cwd = Util.root(),
     esc_esc = false,
     ctrl_hjkl = false,

@@ -135,3 +135,6 @@ function z() {
 }
 
 source $HOME/.ssh_alias
+
+alias adm-cmdbdev7-t='ssh -tt hakonh@adm-ts2-p "bash -i -c \"tuba root@adm-cmdbdev7-t\""'
+export HISTTIMEFORMAT="%F %T "
