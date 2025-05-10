@@ -14,6 +14,11 @@ local function map(mode, lhs, rhs, opts)
   end
 end
 
+-- lazygit
+map("n", "<leader>lg", function()
+  Snacks.lazygit({ cwd = LazyVim.root.git() })
+end, { desc = "Lazygit (Root Dir)" })
+
 -- copy/paste entire buffer
 map("n", "<leader>Y", "<cmd>:%y+<cr>", { desc = "Copy entire buffer to clipboard" })
 map("n", "<leader>P", ":silent! %delete _ | 0put +<CR>", { desc = "Replace entire buffer with clipboard content" })
