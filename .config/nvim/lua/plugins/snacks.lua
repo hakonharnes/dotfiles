@@ -4,7 +4,7 @@ return {
   lazy = false,
   opts = {
     bigfile = { enabled = true },
-    -- quickfile = { enabled = true },
+    quickfile = { enabled = true },
     words = { enabled = true },
     zen = {
       win = {
