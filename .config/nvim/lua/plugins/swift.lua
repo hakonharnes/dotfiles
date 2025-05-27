@@ -1,30 +1,30 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    config = function()
-      local lspconfig = require("lspconfig")
-      lspconfig.sourcekit.setup({
-        capabilities = {
-          workspace = {
-            didChangeWatchedFiles = {
-              dynamicRegistration = true,
+    opts = {
+      servers = {
+        sourcekit = {
+          capabilities = {
+            workspace = {
+              didChangeWatchedFiles = {
+                dynamicRegistration = true,
+              },
             },
           },
         },
-      })
-
-      vim.diagnostic.config({
+      },
+      diagnostics = {
         virtual_text = true,
-      })
+      },
+      setup = {
+        sourcekit = function(_, opts) end,
+      },
+    },
 
-      vim.api.nvim_create_autocmd("LspAttach", {
-        desc = "LSP Actions",
-        callback = function(args)
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true })
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
-        end,
-      })
-    end,
+    keys = {
+      { "K", vim.lsp.buf.hover, desc = "Hover" },
+      { "gd", vim.lsp.buf.definition, desc = "Goto Definition" },
+    },
   },
   {
     "nvim-treesitter/nvim-treesitter",
