@@ -2,7 +2,7 @@
 
 # : Manager {{{
 
-[mgr]
+[manager]
 cwd = { fg = "#8ABEB7", bold = true } # Blue
 
 # Hovered

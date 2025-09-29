@@ -13,6 +13,15 @@ return {
           },
         },
       },
+      vtsls = {
+        settings = {
+          typescript = {
+            preferences = {
+              importModuleSpecifier = "non-relative",
+            },
+          },
+        },
+      },
     },
   },
 }

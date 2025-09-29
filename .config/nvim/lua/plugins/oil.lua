@@ -20,6 +20,9 @@ return {
       },
 
       use_default_keymaps = false,
+      lsp_file_methods = {
+        autosave_changes = true,
+      },
 
       keymaps = {
         ["g?"] = "actions.show_help",

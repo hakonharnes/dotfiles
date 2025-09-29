@@ -8,7 +8,7 @@ after-login-command = []
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
   'exec-and-forget borders active_color="gradient(top_left=0xee33ccff,bottom_right=0xee00ff99)" inactive_color=0xff414550 width=4 hidpi=on',
-  'exec-and-forget colima start',
+  'exec-and-forget orb'
 ]
 
 # exec-on-workspace-change = [

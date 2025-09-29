@@ -19,10 +19,6 @@ map("n", "<leader>lg", function()
   Snacks.lazygit({ cwd = LazyVim.root.git() })
 end, { desc = "Lazygit (Root Dir)" })
 
--- copy/paste entire buffer
-map("n", "<leader>Y", "<cmd>:%y+<cr>", { desc = "Copy entire buffer to clipboard" })
-map("n", "<leader>P", ":silent! %delete _ | 0put +<CR>", { desc = "Replace entire buffer with clipboard content" })
-
 -- bibtex
 map("n", "<c-b>", "<cmd>Telescope bibtex<cr>", { desc = "Open bibtex entries" })
 map("i", "<c-b>", "<cmd>Telescope bibtex<cr>", { desc = "Open bibtex entries" })

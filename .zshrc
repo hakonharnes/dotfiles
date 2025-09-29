@@ -33,6 +33,8 @@ HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND=''
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=''
 ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
 
+
+
 # plugins
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-syntax-highlighting
@@ -48,8 +50,11 @@ zinit cdreplay -q
 
 # keybindings
 bindkey -e
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
+autoload -U up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search   # Up arrow
+bindkey "^[[B" down-line-or-beginning-search # Down arrow
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
@@ -71,11 +76,11 @@ export EDITOR="nvim"
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+# zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # shell integrations
 eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+# eval "$(zoxide init --cmd cd zsh)"
 
 # aliases
 alias i='brew install'
@@ -101,6 +106,10 @@ alias dev='ssh -tt hakonh@adm-ts3-p "bash -i -c \"tuba root@adm-cmdbdev3-t\""'
 alias gitea='ssh -tt hakonh@adm-ts3-p "bash -i -c \"tuba root@adm-gitea2-p\""'
 alias gpu='ssh -tt hakonh@adm-ts3-p "bash -i -c \"tuba root@adm-gpu1-p\""'
 
+alias supabase='npx supabase'
+
+alias start-itop='sudo docker run -d -p 8000:80 --name=itop basis-itop:latest'
+alias reset-itop='sudo docker stop itop && sudo docker rm itop && sudo docker run -d -p 8000:80 --name=itop basis-itop:latest'
 
 alias ts1='ssh ts1'
 alias ts2='ssh ts2'
@@ -138,3 +147,37 @@ source $HOME/.ssh_alias
 
 alias adm-cmdbdev7-t='ssh -tt hakonh@adm-ts2-p "bash -i -c \"tuba root@adm-cmdbdev7-t\""'
 export HISTTIMEFORMAT="%F %T "
+
+# pnpm
+export PNPM_HOME="/Users/hakon/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Fix completions for uv run.
+_uv_run_mod() {
+    if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+        _arguments '*:filename:_files'
+    else
+        _uv "$@"
+    fi
+}
+compdef _uv_run_mod uv
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+# __conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+#         . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# <<< conda initialize <<<
+

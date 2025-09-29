@@ -1,15 +1,9 @@
 return {
-  "HakonHarnes/img-clip.nvim",
+  dir = "/Users/hakon/img-clip.nvim",
   event = "VeryLazy",
   opts = {
-    filetypes = {
-      markdown = {
-        relative_to_current_file = true,
-      },
+    default = {
+      template = "",
     },
-  },
-
-  keys = {
-    { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste clipboard image" },
   },
 }
