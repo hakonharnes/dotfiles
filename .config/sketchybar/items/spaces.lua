@@ -25,8 +25,18 @@ local function list_workspaces(args)
 	return result
 end
 
-local function get_focused_workspace()
-	return exec("aerospace list-workspaces --focused")
+local function get_focused_workspaces()
+	local output = exec("aerospace list-workspaces --focused")
+	if not output then
+		return {}
+	end
+
+	local result = {}
+	for line in output:gmatch("([^\n]+)") do
+		result[line] = true
+	end
+
+	return result
 end
 
 local function get_non_empty_workspaces()
@@ -52,12 +62,12 @@ local function get_workspace_to_monitor()
 	return workspace_to_monitor
 end
 
-local function update_workspace_items(focused_workspace)
+local function update_workspace_items(focused_workspaces)
 	local non_empty = get_non_empty_workspaces()
 	local workspace_to_monitor = get_workspace_to_monitor()
 
 	for workspace, space in pairs(WORKSPACE_ITEMS) do
-		local is_focused = workspace == focused_workspace
+		local is_focused = focused_workspaces[workspace] == true
 		local is_non_empty = non_empty[workspace] == true
 		local is_visible = is_focused or is_non_empty
 
@@ -92,11 +102,14 @@ local function init()
 		})
 	end
 
-	local focused = get_focused_workspace()
-	WORKSPACE_ITEMS[focused]:subscribe("aerospace_focus_change", function()
-		local focused = get_focused_workspace()
-		update_workspace_items(focused)
-	end)
+	local focused = get_focused_workspaces()
+	local first_workspace = workspaces[1]
+	if first_workspace and WORKSPACE_ITEMS[first_workspace] then
+		WORKSPACE_ITEMS[first_workspace]:subscribe("aerospace_focus_change", function()
+			local focused = get_focused_workspaces()
+			update_workspace_items(focused)
+		end)
+	end
 
 	update_workspace_items(focused)
 end
