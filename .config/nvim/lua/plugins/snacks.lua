@@ -6,6 +6,13 @@ return {
     bigfile = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = true },
+    lazygit = {
+      config = {
+        os = {
+          editPreset = "nvim-remote",
+        },
+      },
+    },
     zen = {
       win = {
         backdrop = false,

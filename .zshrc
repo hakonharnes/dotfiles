@@ -181,3 +181,6 @@ compdef _uv_run_mod uv
 # unset __conda_setup
 # <<< conda initialize <<<
 
+
+# Added by Antigravity
+export PATH="/Users/hakon/.antigravity/antigravity/bin:$PATH"

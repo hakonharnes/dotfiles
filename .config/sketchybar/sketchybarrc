@@ -1,8 +1,15 @@
 #!/usr/bin/env lua
 
--- This is only needed once to install the sketchybar module
--- (or for an update of the module)
-os.execute("[ ! -d $HOME/.local/share/sketchybar_lua/ ] && (git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua && cd /tmp/SbarLua/ && make install && rm -rf /tmp/SbarLua/)")
+-- Rebuild SbarLua module if missing or if Lua version has changed (e.g. after brew upgrade)
+os.execute([[
+  LUA_VERSION=$(lua -v 2>&1 | head -1)
+  MARKER="$HOME/.local/share/sketchybar_lua/.lua_version"
+  if [ ! -f "$HOME/.local/share/sketchybar_lua/sketchybar.so" ] || [ ! -f "$MARKER" ] || [ "$LUA_VERSION" != "$(cat "$MARKER")" ]; then
+    rm -rf /tmp/SbarLua
+    git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua && cd /tmp/SbarLua/ && make install && rm -rf /tmp/SbarLua/
+    echo "$LUA_VERSION" > "$MARKER"
+  fi
+]])
 
 -- Add the sketchybar module to the package cpath (the module could be
 -- installed into the default search path then this would not be needed)
