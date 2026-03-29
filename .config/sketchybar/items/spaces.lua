@@ -51,7 +51,7 @@ local function get_non_empty_workspaces()
 end
 
 local function get_workspace_to_monitor()
-	local lines = list_workspaces('--all --format "%{workspace};%{monitor-id}"')
+	local lines = list_workspaces('--all --format "%{workspace};%{monitor-appkit-nsscreen-screens-id}"')
 	local workspace_to_monitor = {}
 
 	for _, line in ipairs(lines) do
