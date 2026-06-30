@@ -5,69 +5,45 @@ local function exec(cmd)
 	local handle = io.popen(cmd)
 
 	if not handle then
-		return nil
+		return ""
 	end
 
 	local output = handle:read("*a")
 	handle:close()
 
-	return output:match("^%s*(.-)%s*$")
+	return output or ""
 end
 
-local function list_workspaces(args)
-	local output = exec("aerospace list-workspaces " .. (args or ""))
-	local result = {}
-
-	for line in output:gmatch("([^\n]+)") do
-		table.insert(result, line)
+-- Parse the `workspace|is-focused|monitor-id` format into a focused set and a
+-- monitor map. Shared by the synchronous init path and the async refresh.
+local function parse_meta(out)
+	local order, focused, monitor = {}, {}, {}
+	for line in (out or ""):gmatch("[^\n]+") do
+		local ws, foc, mon = line:match("^([^|]*)|([^|]*)|([^|]*)$")
+		if ws then
+			table.insert(order, ws)
+			focused[ws] = foc == "true"
+			monitor[ws] = mon
+		end
 	end
-
-	return result
+	return order, focused, monitor
 end
 
-local function get_focused_workspaces()
-	local output = exec("aerospace list-workspaces --focused")
-	if not output then
-		return {}
+local function parse_non_empty(out)
+	local set = {}
+	for line in (out or ""):gmatch("[^\n]+") do
+		set[line:match("^%s*(.-)%s*$")] = true
 	end
-
-	local result = {}
-	for line in output:gmatch("([^\n]+)") do
-		result[line] = true
-	end
-
-	return result
+	return set
 end
 
-local function get_non_empty_workspaces()
-	local workspaces = list_workspaces("--monitor all --empty no")
+local META_CMD = "aerospace list-workspaces --all --format "
+	.. "'%{workspace}|%{workspace-is-focused}|%{monitor-appkit-nsscreen-screens-id}'"
+local NON_EMPTY_CMD = "aerospace list-workspaces --monitor all --empty no"
 
-	local result = {}
-	for _, workspace in ipairs(workspaces) do
-		result[workspace] = true
-	end
-
-	return result
-end
-
-local function get_workspace_to_monitor()
-	local lines = list_workspaces('--all --format "%{workspace};%{monitor-appkit-nsscreen-screens-id}"')
-	local workspace_to_monitor = {}
-
-	for _, line in ipairs(lines) do
-		local workspace, monitor_id = line:match("^([^;]+);([^;]+)$")
-		workspace_to_monitor[workspace] = monitor_id
-	end
-
-	return workspace_to_monitor
-end
-
-local function update_workspace_items(focused_workspaces)
-	local non_empty = get_non_empty_workspaces()
-	local workspace_to_monitor = get_workspace_to_monitor()
-
+local function apply(focused, monitor, non_empty)
 	for workspace, space in pairs(WORKSPACE_ITEMS) do
-		local is_focused = focused_workspaces[workspace] == true
+		local is_focused = focused[workspace] == true
 		local is_non_empty = non_empty[workspace] == true
 		local is_visible = is_focused or is_non_empty
 
@@ -78,17 +54,29 @@ local function update_workspace_items(focused_workspaces)
 			},
 			padding_left = is_visible and 3 or 0,
 			padding_right = is_visible and 3 or 0,
-			associated_display = workspace_to_monitor[workspace],
+			associated_display = monitor[workspace],
 			click_script = "aerospace workspace " .. workspace,
 		})
 	end
 end
 
-local function init()
-	local workspaces = list_workspaces("--all")
-	local workspace_to_monitor = get_workspace_to_monitor()
+-- Async refresh: both queries run off the SbarLua event-loop thread, so a
+-- workspace switch never blocks the bar. Nested to keep the result coherent.
+local function update_workspace_items()
+	sbar.exec(META_CMD, function(meta_out)
+		local _, focused, monitor = parse_meta(meta_out)
+		sbar.exec(NON_EMPTY_CMD, function(empty_out)
+			apply(focused, monitor, parse_non_empty(empty_out))
+		end)
+	end)
+end
 
-	for _, workspace in ipairs(workspaces) do
+local function init()
+	-- Item creation must be synchronous: items have to exist before we can
+	-- subscribe or apply state. This runs once at bar startup.
+	local order, _, monitor = parse_meta(exec(META_CMD))
+
+	for _, workspace in ipairs(order) do
 		WORKSPACE_ITEMS[workspace] = sbar.add("item", "space." .. workspace, {
 			icon = { drawing = false },
 			label = {
@@ -98,20 +86,17 @@ local function init()
 			},
 			padding_left = 3,
 			padding_right = 3,
-			associated_display = workspace_to_monitor[workspace],
+			associated_display = monitor[workspace],
 		})
 	end
 
-	local focused = get_focused_workspaces()
-	local first_workspace = workspaces[1]
+	-- Single global listener: any workspace/focus change refreshes all items.
+	local first_workspace = order[1]
 	if first_workspace and WORKSPACE_ITEMS[first_workspace] then
-		WORKSPACE_ITEMS[first_workspace]:subscribe("aerospace_focus_change", function()
-			local focused = get_focused_workspaces()
-			update_workspace_items(focused)
-		end)
+		WORKSPACE_ITEMS[first_workspace]:subscribe("aerospace_focus_change", update_workspace_items)
 	end
 
-	update_workspace_items(focused)
+	update_workspace_items()
 end
 
 init()
