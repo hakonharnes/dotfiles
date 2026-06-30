@@ -61,13 +61,30 @@ local function apply(focused, monitor, non_empty)
 end
 
 -- Async refresh: both queries run off the SbarLua event-loop thread, so a
--- workspace switch never blocks the bar. Nested to keep the result coherent.
+-- workspace switch never blocks the bar. The two are fired in parallel and
+-- joined once both land. Closure-local state means overlapping refreshes (from
+-- rapid switches) can't clobber each other; SbarLua callbacks are cooperative
+-- on one thread, so `pending` needs no locking.
 local function update_workspace_items()
+	local focused, monitor, non_empty
+	local pending = 2
+
+	local function done()
+		pending = pending - 1
+		if pending == 0 then
+			apply(focused, monitor, non_empty)
+		end
+	end
+
 	sbar.exec(META_CMD, function(meta_out)
-		local _, focused, monitor = parse_meta(meta_out)
-		sbar.exec(NON_EMPTY_CMD, function(empty_out)
-			apply(focused, monitor, parse_non_empty(empty_out))
-		end)
+		local _
+		_, focused, monitor = parse_meta(meta_out)
+		done()
+	end)
+
+	sbar.exec(NON_EMPTY_CMD, function(empty_out)
+		non_empty = parse_non_empty(empty_out)
+		done()
 	end)
 end
 
