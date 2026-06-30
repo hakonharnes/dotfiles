@@ -21,6 +21,9 @@ exec-on-workspace-change = [
 # Start AeroSpace at login
 start-at-login = true
 
+# Automatically reload the config when this file changes (AeroSpace 0.21.0+)
+auto-reload-config = true
+
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
@@ -38,13 +41,12 @@ default-root-container-layout = 'tiles'
 #               tall monitor (anything higher than wide) gets vertical orientation
 default-root-container-orientation = 'auto'
 
-# Mouse follows focus when focused monitor changes
-# Drop it from your config, if you don't like this behavior
-# See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
+# Focus/mouse coupling — both directions enabled:
+#   1. focus-follows-mouse: hovering a window with the mouse focuses it (native, 0.21.0+)
+#   2. mouse-follows-focus: switching the focused monitor warps the mouse to it
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
-# Fallback value (if you omit the key): on-focused-monitor-changed = []
+focus-follows-mouse.enabled = true
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
-# on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
