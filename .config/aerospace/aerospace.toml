@@ -152,10 +152,10 @@ alt-w = 'exec-and-forget /usr/local/bin/open-arc'
 # alt-cmd-d = 'exec-and-forget open -na Discord'
 
 
-alt-cmd-l = ['move-workspace-to-monitor right']
-alt-cmd-h = ['move-workspace-to-monitor left']
-alt-cmd-k = ['move-workspace-to-monitor up']
-alt-cmd-j = ['move-workspace-to-monitor down']
+alt-cmd-l = ['move-workspace-to-monitor right', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
+alt-cmd-h = ['move-workspace-to-monitor left', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
+alt-cmd-k = ['move-workspace-to-monitor up', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
+alt-cmd-j = ['move-workspace-to-monitor down', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
 
 alt-ctrl-1 = ['summon-workspace 1']
 alt-ctrl-2 = ['summon-workspace 2']
