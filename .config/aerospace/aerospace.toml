@@ -61,6 +61,14 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A",
                          "D", "E", "F", "G", "I", "M", "N", "O", "P", "Q", "R", "S", "T", 
                          "U", "V", "W", "X", "Y", "Z", "/"]
 
+# Pin workspace D to the built-in display (fallback to the main monitor when the
+# built-in is absent, e.g. clamshell). Everything else defaults to the main (LG)
+# monitor. Without an explicit assignment here, AeroSpace auto-creates a
+# placeholder workspace (e.g. "11") to occupy the built-in.
+# See https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+[workspace-to-monitor-force-assignment]
+D = ['Built-in', 'main']
+
 # Possible values: (qwerty|dvorak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
 [key-mapping]
