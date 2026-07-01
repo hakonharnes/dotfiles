@@ -59,7 +59,7 @@ automatically-unhide-macos-hidden-apps = true
 # Fallback value (if you omit the key): persistent-workspaces = []
 persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "A", "B", "C",
                          "D", "E", "F", "G", "I", "M", "N", "O", "P", "Q", "R", "S", "T", 
-                         "U", "V", "W", "X", "Y", "Z"]
+                         "U", "V", "W", "X", "Y", "Z", "/"]
 
 # Possible values: (qwerty|dvorak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
