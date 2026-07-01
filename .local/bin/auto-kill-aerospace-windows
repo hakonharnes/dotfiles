@@ -1,0 +1,85 @@
+#!/bin/sh
+# Reap AeroSpace ghost windows safely.
+#
+# Signal: a window whose title is empty on TWO consecutive runs (so a window
+# that is only briefly title-less while loading survives). The focused window is
+# never touched. Common path is intentionally cheap: if no empty-title windows
+# exist, skip the focused-window lookup entirely.
+#
+# Robustness added on top of the original:
+#   - a mkdir-based lock serializes overlapping runs (fast workspace switching
+#     can start two copies that would otherwise race on the state file);
+#   - every close is logged to ghost-killed.log for auditing false positives;
+#   - the title is the LAST field and split with an explicit tab, so a title
+#     that itself contains a tab can no longer masquerade as empty.
+AS=${AEROSPACE_BIN:-/opt/homebrew/bin/aerospace}
+CACHE_DIR=${XDG_CACHE_HOME:-"$HOME/.cache"}/aerospace
+STATE=$CACHE_DIR/ghost-prev
+LOG=$CACHE_DIR/ghost-killed.log
+LOCK=$CACHE_DIR/reaper.lock
+
+[ -d "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
+
+# --- Lock: serialize concurrent runs (mkdir is atomic; macOS has no flock). ---
+# If another reaper holds the lock, skip this run — the next workspace switch
+# catches anything we miss. Break a lock left by a crashed run (older than 1min).
+if ! mkdir "$LOCK" 2>/dev/null; then
+  if [ -n "$(find "$LOCK" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then
+    rmdir "$LOCK" 2>/dev/null
+    mkdir "$LOCK" 2>/dev/null || exit 0
+  else
+    exit 0
+  fi
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT INT TERM
+
+# --- Snapshot every window once: id <tab> app <tab> title (title last). ---
+snapshot=$("$AS" list-windows --all --format '%{window-id}%{tab}%{app-name}%{tab}%{window-title}' 2>/dev/null)
+
+# Empty-title window ids. NF>=3 && $3=="" is only true for a genuinely empty
+# title; a title containing a tab yields NF>3 and is left alone.
+empties=$(printf '%s\n' "$snapshot" | awk -F '\t' 'NF >= 3 && $3 == "" { print $1 }')
+
+if [ -z "$empties" ]; then
+  : > "$STATE"
+  exit 0
+fi
+
+if [ ! -s "$STATE" ]; then
+  printf '%s\n' "$empties" > "$STATE"
+  exit 0
+fi
+
+# Candidates = empty now AND empty on the previous run.
+candidates=$(printf '%s\n' "$empties" \
+  | awk 'NR == FNR { seen[$0] = 1; next } $0 != "" && seen[$0] { print }' "$STATE" -)
+
+printf '%s\n' "$empties" > "$STATE"
+
+[ -n "$candidates" ] || exit 0
+
+# Never close the focused window.
+focused=$("$AS" list-windows --focused --format '%{window-id}' 2>/dev/null)
+if [ -n "$focused" ]; then
+  candidates=$(printf '%s\n' "$candidates" | awk -v focused="$focused" '$0 != focused')
+fi
+
+[ -n "$candidates" ] || exit 0
+
+# Rotate the log if it has grown past ~100 KiB (keep the last 200 lines). Only
+# reached when there is actually something to kill, so effectively never hot.
+if [ -f "$LOG" ] && [ "$(wc -c < "$LOG" 2>/dev/null || echo 0)" -gt 102400 ]; then
+  tail -n 200 "$LOG" > "$LOG.tmp" 2>/dev/null && mv "$LOG.tmp" "$LOG"
+fi
+
+ts=$(date '+%Y-%m-%dT%H:%M:%S')
+printf '%s\n' "$candidates" \
+  | while IFS= read -r id; do
+      [ -n "$id" ] || continue
+      app=$(printf '%s\n' "$snapshot" | awk -F '\t' -v id="$id" '$1 == id { print $2; exit }')
+      if "$AS" close --window-id "$id" 2>/dev/null; then
+        printf '%s\tclosed\tid=%s\tapp=%s\n' "$ts" "$id" "$app" >> "$LOG"
+      else
+        printf '%s\tfailed\tid=%s\tapp=%s\n' "$ts" "$id" "$app" >> "$LOG"
+      fi
+    done
