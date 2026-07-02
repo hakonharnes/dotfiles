@@ -43,8 +43,13 @@ zinit light zsh-users/zsh-history-substring-search
 zinit ice depth=1; zinit light jeffreytse/zsh-vi-mode
 zinit light Aloxaf/fzf-tab
 
-# load completions
-autoload -U compinit && compinit
+# load completions (only rebuild cache once per day)
+autoload -U compinit
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 zinit cdreplay -q
 
@@ -116,11 +121,6 @@ alias ts2='ssh ts2'
 alias ts3='ssh ts3'
 
 export PATH="/usr/local/bin:$PATH"
-
-if [ -d "/opt/homebrew/opt/ruby/bin" ]; then
-  export PATH=/opt/homebrew/opt/ruby/bin:$PATH
-  export PATH=`gem environment gemdir`/bin:$PATH
-fi
 
 # Created by `pipx` on 2025-01-24 08:28:43
 export PATH="$PATH:/Users/hakon/.local/bin"
