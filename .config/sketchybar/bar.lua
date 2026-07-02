@@ -6,6 +6,6 @@ sbar.bar({
 	sticky = true,
 	padding_right = 10,
 	padding_left = 10,
-	blur_radius = 30,
+	blur_radius = 40,
 	topmost = "window",
 })
