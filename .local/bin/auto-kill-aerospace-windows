@@ -2,9 +2,10 @@
 # Reap AeroSpace ghost windows safely.
 #
 # Signal: a window whose title is empty on TWO consecutive runs (so a window
-# that is only briefly title-less while loading survives). The focused window is
-# never touched. Common path is intentionally cheap: if no empty-title windows
-# exist, skip the focused-window lookup entirely.
+# that is only briefly title-less while loading survives). Apps known to expose
+# persistent untitled helper windows are excluded. The focused window is never
+# touched. Common path is intentionally cheap: if no candidate windows exist,
+# skip the focused-window lookup entirely.
 #
 # Robustness added on top of the original:
 #   - a mkdir-based lock serializes overlapping runs (fast workspace switching
@@ -33,12 +34,14 @@ if ! mkdir "$LOCK" 2>/dev/null; then
 fi
 trap 'rmdir "$LOCK" 2>/dev/null' EXIT INT TERM
 
-# --- Snapshot every window once: id <tab> app <tab> title (title last). ---
-snapshot=$("$AS" list-windows --all --format '%{window-id}%{tab}%{app-name}%{tab}%{window-title}' 2>/dev/null)
+# --- Snapshot every window once: id <tab> app <tab> bundle-id <tab> title. ---
+snapshot=$("$AS" list-windows --all --format '%{window-id}%{tab}%{app-name}%{tab}%{app-bundle-id}%{tab}%{window-title}' 2>/dev/null)
 
-# Empty-title window ids. NF>=3 && $3=="" is only true for a genuinely empty
-# title; a title containing a tab yields NF>3 and is left alone.
-empties=$(printf '%s\n' "$snapshot" | awk -F '\t' 'NF >= 3 && $3 == "" { print $1 }')
+# Fusion and Yealink keep legitimate, persistent helper windows with empty
+# titles. Empty-title detection alone cannot distinguish those from ghosts.
+# Requiring exactly four fields also leaves titles containing tabs alone.
+empties=$(printf '%s\n' "$snapshot" \
+  | awk -F '\t' 'NF == 4 && $4 == "" && $3 != "com.autodesk.fusion360" && $3 != "com.yealink.YealinkUSBConnect" { print $1 }')
 
 if [ -z "$empties" ]; then
   : > "$STATE"

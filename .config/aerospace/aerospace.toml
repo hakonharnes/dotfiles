@@ -16,7 +16,7 @@ after-startup-command = [
 exec-on-workspace-change = [
   '/bin/bash',
   '-c',
-  '$HOME/.local/bin/auto-kill-aerospace-windows; sketchybar --trigger aerospace_focus_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+  'sketchybar --trigger aerospace_focus_change FOCUSED_WORKSPACE="$AEROSPACE_FOCUSED_WORKSPACE"',
 ]
 # Start AeroSpace at login
 start-at-login = true

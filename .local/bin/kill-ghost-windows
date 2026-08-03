@@ -1,5 +1,5 @@
 #!/bin/sh
 
 aerospace list-windows --all --json \
-  | jq -r '.[] | select(."window-title"=="") | ."window-id"' \
+  | jq -r '.[] | select(."window-title" == "" and ."app-name" != "Fusion" and ."app-name" != "Yealink USB Connect") | ."window-id"' \
   | xargs -n1 aerospace close --window-id
