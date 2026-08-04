@@ -156,7 +156,7 @@ alt-q = 'close --quit-if-last-window'
 alt-shift-q = 'close-all-windows-but-current'
 
 alt-enter = 'exec-and-forget open -na Ghostty'
-alt-w = 'exec-and-forget /usr/local/bin/open-arc'
+alt-w = """exec-and-forget osascript -e 'tell application "Arc" to make new window' -e 'tell application "Arc" to activate'"""
 # alt-cmd-d = 'exec-and-forget open -na Discord'
 
 
