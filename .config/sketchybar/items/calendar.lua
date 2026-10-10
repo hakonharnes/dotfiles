@@ -1,7 +1,7 @@
 local cal = sbar.add("item", {
 	position = "right",
 	icon = { drawing = false },
-	update_freq = 10,
+	update_freq = 30,
 })
 
 local function update()

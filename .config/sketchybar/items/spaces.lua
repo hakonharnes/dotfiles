@@ -55,7 +55,6 @@ local function apply(focused, monitor, non_empty)
 			padding_left = is_visible and 3 or 0,
 			padding_right = is_visible and 3 or 0,
 			associated_display = monitor[workspace],
-			click_script = "aerospace workspace " .. workspace,
 		})
 	end
 end
@@ -104,6 +103,7 @@ local function init()
 			padding_left = 3,
 			padding_right = 3,
 			associated_display = monitor[workspace],
+			click_script = "aerospace workspace " .. workspace,
 		})
 	end
 
