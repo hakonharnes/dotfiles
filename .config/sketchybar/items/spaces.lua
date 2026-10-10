@@ -41,36 +41,50 @@ local META_CMD = "aerospace list-workspaces --all --format "
 	.. "'%{workspace}|%{workspace-is-focused}|%{monitor-appkit-nsscreen-screens-id}'"
 local NON_EMPTY_CMD = "aerospace list-workspaces --monitor all --empty no"
 
+-- Last state sent to each workspace item. A switch usually changes only a few
+-- items, so unchanged ones are skipped instead of re-sending all of them.
+local LAST_STATE = {}
+
 local function apply(focused, monitor, non_empty)
 	for workspace, space in pairs(WORKSPACE_ITEMS) do
 		local is_focused = focused[workspace] == true
 		local is_non_empty = non_empty[workspace] == true
 		local is_visible = is_focused or is_non_empty
+		local display = monitor[workspace]
 
-		space:set({
-			label = {
-				drawing = is_visible,
-				highlight = is_focused,
-			},
-			padding_left = is_visible and 3 or 0,
-			padding_right = is_visible and 3 or 0,
-			associated_display = monitor[workspace],
-		})
+		local last = LAST_STATE[workspace]
+		if not last or last.focused ~= is_focused or last.visible ~= is_visible or last.display ~= display then
+			LAST_STATE[workspace] = { focused = is_focused, visible = is_visible, display = display }
+			space:set({
+				label = {
+					drawing = is_visible,
+					highlight = is_focused,
+				},
+				padding_left = is_visible and 3 or 0,
+				padding_right = is_visible and 3 or 0,
+				associated_display = display,
+			})
+		end
 	end
 end
 
+-- Incremented per refresh, so results from a superseded refresh are dropped.
+local generation = 0
+
 -- Async refresh: both queries run off the SbarLua event-loop thread, so a
 -- workspace switch never blocks the bar. The two are fired in parallel and
--- joined once both land. Closure-local state means overlapping refreshes (from
--- rapid switches) can't clobber each other; SbarLua callbacks are cooperative
--- on one thread, so `pending` needs no locking.
+-- joined once both land. On rapid switches an older refresh can finish after a
+-- newer one, so only the latest refresh applies its results. SbarLua callbacks
+-- are cooperative on one thread, so `pending` and `generation` need no locking.
 local function update_workspace_items()
 	local focused, monitor, non_empty
 	local pending = 2
+	generation = generation + 1
+	local this_generation = generation
 
 	local function done()
 		pending = pending - 1
-		if pending == 0 then
+		if pending == 0 and this_generation == generation then
 			apply(focused, monitor, non_empty)
 		end
 	end

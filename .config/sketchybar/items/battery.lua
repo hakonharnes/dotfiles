@@ -9,7 +9,10 @@ local battery = sbar.add("item", {
 local function battery_update()
 	sbar.exec("pmset -g batt", function(batt_info)
 		local percentage = tonumber(string.match(batt_info, "(%d+)%%"))
-		local charging = string.find(batt_info, "AC Power")
+		-- Only while actually charging: plugged in but full reports "charged" or
+		-- "AC attached; not charging". Plain-text find, so "discharging" can't match.
+		local charging = string.find(batt_info, "; charging;", 1, true)
+			or string.find(batt_info, "finishing charge", 1, true)
 		local icon = icons.battery._0
 
 		if percentage then
