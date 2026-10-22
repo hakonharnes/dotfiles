@@ -34,7 +34,6 @@ HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=''
 ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
 
 
-
 # plugins
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-syntax-highlighting
@@ -151,8 +150,8 @@ export HISTTIMEFORMAT="%F %T "
 # pnpm
 export PNPM_HOME="/Users/hakon/Library/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
 
@@ -182,5 +181,9 @@ compdef _uv_run_mod uv
 # <<< conda initialize <<<
 
 
-# Added by Antigravity
-export PATH="/Users/hakon/.antigravity/antigravity/bin:$PATH"
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+# The Razer (spanner.no server) from anywhere: SSH through Cloudflare Access with the service token.
+alias razer="ssh razer"
