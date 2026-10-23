@@ -1,0 +1,6 @@
+# glint — one option per line (key = value); rules as [app …] sections. See docs/configuration.md
+active_color = gradient(0xee33ccff,0xee00ff99,angle=45)
+inactive_color = 0xaa595959
+width = 3
+style = round
+order = above
